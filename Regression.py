@@ -337,7 +337,7 @@ class BayesianEstimation():
         return [
                self.select_distribution(self.dist_param[group_variable]['mu_d'],self.dist_param[group_variable]['mu_d_loc'],self.dist_param[group_variable]['mu_d_scale']),    # mu_intercept : hyper-prior : TODO update it from user input
                self.select_distribution(self.dist_param[group_variable]['sigma_d'],self.dist_param[group_variable]['sigma_d_loc'],self.dist_param[group_variable]['sigma_d_scale']),  # sigma_intercept: hyper-prior : TODO update it from user input
-               "lambda {0}, {1}: tfd.MultivariateNormalDiag(loc=affine(tf.ones([{2}]), {3}[..., tf.newaxis]),scale_identity_multiplier={4})".format(
+               "lambda {0}, {1}: tfd.Independent(tfd.Normal(loc=affine(tf.ones([{2}]), {3}[..., tf.newaxis]),scale=tf.transpose({4}*[{5}])),reinterpreted_batch_ndims=1)".format(
                        "sigma_intercept_"+group_variable,
                        "mu_intercept_"+group_variable,
                        group_count,
@@ -363,7 +363,7 @@ class BayesianEstimation():
         return [
                self.select_distribution(self.dist_param[variable]['mu_d'],self.dist_param[variable]['mu_d_loc'],self.dist_param[variable]['mu_d_scale']), # mu_slope : hyper-prior : TODO update it from user input
                self.select_distribution(self.dist_param[variable]['sigma_d'],self.dist_param[variable]['sigma_d_loc'],self.dist_param[group_variable]['sigma_d_scale']), # sigma_slope: hyper-prior : TODO update it from user input
-               "lambda {0},{1}: tfd.MultivariateNormalDiag(loc=affine(tf.ones([{2}]), {3}[..., tf.newaxis]),scale_identity_multiplier={4})".format(
+               "lambda {0},{1}: tfd.Independent(tfd.Normal(loc=affine(tf.ones([{2}]), {3}[..., tf.newaxis]),scale=tf.transpose({4}*[{5}])),reinterpreted_batch_ndims=1)".format(
                        "sigma_slope_"+variable+"_"+group_variable,
                        "mu_slope_"+variable+"_"+group_variable,
                        group_count,
@@ -416,7 +416,7 @@ class BayesianEstimation():
 
     def target(self, args, loc, scale):
         return [
-            "lambda {}:  tfd.MultivariateNormalDiag(loc={},scale_identity_multiplier={})".format(args,loc,scale)
+            "lambda {}:  tfd.Independent(tfd.Normal(loc={},scale={}))".format(args,loc,scale)
         ]
 
     def create_joint_dist_seq(self):
